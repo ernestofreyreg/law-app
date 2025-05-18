@@ -1,37 +1,43 @@
 // Base API URL from environment variable with fallback
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://law-api-3rtn.onrender.com/api"
+const API_URL = `${
+  process.env.NEXT_PUBLIC_API_URL || "https://law-api-3rtn.onrender.com"
+}/api`;
 
 // Helper function to get the auth token
 export const getToken = () => {
   if (typeof window !== "undefined") {
-    return localStorage.getItem("token")
+    return localStorage.getItem("token");
   }
-  return null
-}
+  return null;
+};
 
 // Helper function to handle API responses
 export const handleApiResponse = async (response: Response) => {
-  const data = await response.json()
+  const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.message || "An error occurred")
+    throw new Error(data.message || "An error occurred");
   }
 
-  return data
-}
+  return data;
+};
 
 // Auth API calls
 export const authApi = {
-  signup: async (userData: { email: string; password: string; firmName: string }) => {
+  signup: async (userData: {
+    email: string;
+    password: string;
+    firmName: string;
+  }) => {
     const response = await fetch(`${API_URL}/auth/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(userData),
-    })
+    });
 
-    return handleApiResponse(response)
+    return handleApiResponse(response);
   },
 
   login: async (credentials: { email: string; password: string }) => {
@@ -41,67 +47,67 @@ export const authApi = {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(credentials),
-    })
+    });
 
-    return handleApiResponse(response)
+    return handleApiResponse(response);
   },
 
   getMe: async () => {
-    const token = getToken()
+    const token = getToken();
 
     if (!token) {
-      throw new Error("No authentication token found")
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(`${API_URL}/auth/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
+    });
 
-    return handleApiResponse(response)
+    return handleApiResponse(response);
   },
-}
+};
 
 // Customers API calls
 export const customersApi = {
   getAll: async () => {
-    const token = getToken()
+    const token = getToken();
 
     if (!token) {
-      throw new Error("No authentication token found")
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(`${API_URL}/customers`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
+    });
 
-    return handleApiResponse(response)
+    return handleApiResponse(response);
   },
 
   getById: async (id: string) => {
-    const token = getToken()
+    const token = getToken();
 
     if (!token) {
-      throw new Error("No authentication token found")
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(`${API_URL}/customers/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
+    });
 
-    return handleApiResponse(response)
+    return handleApiResponse(response);
   },
 
   create: async (customerData: any) => {
-    const token = getToken()
+    const token = getToken();
 
     if (!token) {
-      throw new Error("No authentication token found")
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(`${API_URL}/customers`, {
@@ -111,16 +117,16 @@ export const customersApi = {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(customerData),
-    })
+    });
 
-    return handleApiResponse(response)
+    return handleApiResponse(response);
   },
 
   update: async (id: string, customerData: any) => {
-    const token = getToken()
+    const token = getToken();
 
     if (!token) {
-      throw new Error("No authentication token found")
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(`${API_URL}/customers/${id}`, {
@@ -130,16 +136,16 @@ export const customersApi = {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(customerData),
-    })
+    });
 
-    return handleApiResponse(response)
+    return handleApiResponse(response);
   },
 
   delete: async (id: string) => {
-    const token = getToken()
+    const token = getToken();
 
     if (!token) {
-      throw new Error("No authentication token found")
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(`${API_URL}/customers/${id}`, {
@@ -147,61 +153,67 @@ export const customersApi = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
+    });
 
-    return handleApiResponse(response)
+    return handleApiResponse(response);
   },
 
   // Helper method to get matters for a customer
   getMatters: async (customerId: string) => {
-    return mattersApi.getByCustomerId(customerId)
+    return mattersApi.getByCustomerId(customerId);
   },
-}
+};
 
 // Matters API calls
 export const mattersApi = {
   getByCustomerId: async (customerId: string) => {
-    const token = getToken()
+    const token = getToken();
 
     if (!token) {
-      throw new Error("No authentication token found")
+      throw new Error("No authentication token found");
     }
 
     try {
-      const response = await fetch(`${API_URL}/customers/${customerId}/matters`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      const response = await fetch(
+        `${API_URL}/customers/${customerId}/matters`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      return handleApiResponse(response)
+      return handleApiResponse(response);
     } catch (error) {
-      console.error("Error fetching matters:", error)
-      return [] // Return empty array on error to prevent UI crashes
+      console.error("Error fetching matters:", error);
+      return []; // Return empty array on error to prevent UI crashes
     }
   },
 
   getById: async (customerId: string, matterId: string) => {
-    const token = getToken()
+    const token = getToken();
 
     if (!token) {
-      throw new Error("No authentication token found")
+      throw new Error("No authentication token found");
     }
 
-    const response = await fetch(`${API_URL}/customers/${customerId}/matters/${matterId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    const response = await fetch(
+      `${API_URL}/customers/${customerId}/matters/${matterId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-    return handleApiResponse(response)
+    return handleApiResponse(response);
   },
 
   create: async (customerId: string, matterData: any) => {
-    const token = getToken()
+    const token = getToken();
 
     if (!token) {
-      throw new Error("No authentication token found")
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(`${API_URL}/customers/${customerId}/matters`, {
@@ -211,46 +223,49 @@ export const mattersApi = {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(matterData),
-    })
+    });
 
-    return handleApiResponse(response)
+    return handleApiResponse(response);
   },
 
   update: async (customerId: string, matterId: string, matterData: any) => {
-    const token = getToken()
+    const token = getToken();
 
     if (!token) {
-      throw new Error("No authentication token found")
+      throw new Error("No authentication token found");
     }
 
-    const response = await fetch(`${API_URL}/customers/${customerId}/matters/${matterId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(matterData),
-    })
+    const response = await fetch(
+      `${API_URL}/customers/${customerId}/matters/${matterId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(matterData),
+      }
+    );
 
-    return handleApiResponse(response)
+    return handleApiResponse(response);
   },
-}
+};
 
 // Stats API calls
 export const statsApi = {
   getStats: async () => {
-    const token = getToken()
+    const token = getToken();
 
     if (!token) {
-      throw new Error("No authentication token found")
+      throw new Error("No authentication token found");
     }
 
     const response = await fetch(`${API_URL}/stats`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
+    });
 
-    return handleApiResponse(response)
+    return handleApiResponse(response);
   },
-}
+};
