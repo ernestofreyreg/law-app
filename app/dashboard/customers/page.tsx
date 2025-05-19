@@ -179,6 +179,7 @@ export default function CustomersPage() {
                         <TableCell className="text-right">
                           <div className="flex justify-end space-x-2">
                             <Button
+                              variant="outline"
                               className="h-8 w-8"
                               aria-label="Edit customer"
                               onClick={() => handleEditCustomer(customer.id)}
@@ -186,6 +187,7 @@ export default function CustomersPage() {
                               <Edit className="h-4 w-4" />
                             </Button>
                             <Button
+                              variant="outline"
                               className="h-8 w-8 text-destructive hover:text-destructive"
                               onClick={() => handleDeleteCustomer(customer.id)}
                               aria-label="Delete customer"

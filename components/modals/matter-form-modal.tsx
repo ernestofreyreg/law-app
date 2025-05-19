@@ -357,7 +357,12 @@ export function MatterFormModal({
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" onClick={handleClose} disabled={isLoading}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleClose}
+              disabled={isLoading}
+            >
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
