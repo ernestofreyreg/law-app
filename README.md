@@ -95,3 +95,94 @@ law-practice-app/
 ├── public/          # Static assets
 └── styles/          # Global styles
 ```
+
+## Testing
+
+The application uses Vitest and React Testing Library for testing. Tests are located alongside the components they test in `__tests__` directories.
+
+### Running Tests
+
+```bash
+# Run all tests
+pnpm test
+
+# Run tests UI
+pnpm test:ui
+
+# Run tests with coverage
+pnpm test:coverage
+```
+
+### Test Structure
+
+Tests are organized following these conventions:
+
+- Test files are named `*.test.tsx` or `*.test.ts`
+- Tests are placed in `__tests__` directories next to the components they test
+- Each test file focuses on a single component or feature
+
+### Writing Tests
+
+Example test structure:
+
+```typescript
+import { describe, it, expect, vi } from "vitest";
+import { render, screen } from "@testing-library/react";
+
+describe("ComponentName", () => {
+  it("should render correctly", () => {
+    render(<ComponentName />);
+    expect(screen.getByText("Expected Text")).toBeInTheDocument();
+  });
+});
+```
+
+### Testing Best Practices
+
+1. **Component Testing**
+
+   - Test component rendering
+   - Test user interactions
+   - Test error states
+   - Test loading states
+
+2. **Mocking**
+
+   - Use `vi.mock()` for mocking dependencies
+   - Mock API calls using `vi.fn()`
+   - Mock React Query hooks when needed
+
+3. **Async Testing**
+
+   - Use `waitFor` for asynchronous operations
+   - Test loading and error states
+   - Verify API calls and responses
+
+4. **Form Testing**
+   - Test form validation
+   - Test form submission
+   - Test error handling
+   - Test success scenarios
+
+### Common Testing Patterns
+
+```typescript
+// Mocking API calls
+vi.mock("@/lib/api", () => ({
+  api: {
+    getData: vi.fn(),
+  },
+}));
+
+// Testing async operations
+await waitFor(() => {
+  expect(screen.getByText("Data Loaded")).toBeInTheDocument();
+});
+
+// Testing user interactions
+fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+```
+
+### Coverage
+
+The project aims to maintain high test coverage. Run `pnpm test:coverage` to generate a coverage report and identify areas that need more testing.
