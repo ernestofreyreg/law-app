@@ -1,43 +1,67 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { DashboardLayout } from "@/components/dashboard-layout"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { useToast } from "@/hooks/use-toast"
-import { Plus, Search, Trash2, Edit } from "lucide-react"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { customersApi } from "@/lib/api"
-import { CustomerFormModal } from "@/components/modals/customer-form-modal"
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { DashboardLayout } from "@/components/dashboard-layout";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useToast } from "@/hooks/use-toast";
+import { Plus, Search, Trash2, Edit } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { customersApi } from "@/lib/api";
+import { CustomerFormModal } from "@/components/modals/customer-form-modal";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Customer {
-  id: string
-  name: string
-  phoneNumber: string
-  email: string
-  address: string
-  notes: string
-  userId: string
-  createdAt: string
-  updatedAt: string
+  id: string;
+  name: string;
+  phoneNumber: string;
+  email: string;
+  address: string;
+  notes: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export default function CustomersPage() {
-  const router = useRouter()
-  const { toast } = useToast()
-  const [searchQuery, setSearchQuery] = useState("")
-  const queryClient = useQueryClient()
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
-  const [editCustomerId, setEditCustomerId] = useState<string | null>(null)
+  const router = useRouter();
+  const { toast } = useToast();
+  const [searchQuery, setSearchQuery] = useState("");
+  const queryClient = useQueryClient();
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editCustomerId, setEditCustomerId] = useState<string | null>(null);
+  const [deleteCustomerId, setDeleteCustomerId] = useState<string | null>(null);
 
   const { data: customers = [], isLoading } = useQuery({
     queryKey: ["customers"],
     queryFn: customersApi.getAll,
-  })
+  });
 
   const deleteCustomerMutation = useMutation({
     mutationFn: customersApi.delete,
@@ -45,42 +69,45 @@ export default function CustomersPage() {
       toast({
         title: "Customer deleted",
         description: "The customer has been deleted successfully.",
-      })
+      });
 
       // Invalidate and refetch customers query
-      queryClient.invalidateQueries({ queryKey: ["customers"] })
+      queryClient.invalidateQueries({ queryKey: ["customers"] });
     },
     onError: (error: Error) => {
       toast({
         title: "Error",
         description: error.message || "Failed to delete customer",
         variant: "destructive",
-      })
+      });
     },
-  })
+  });
 
   const handleDeleteCustomer = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this customer? This action cannot be undone.")) {
-      return
-    }
+    setDeleteCustomerId(id);
+  };
 
-    deleteCustomerMutation.mutate(id)
-  }
+  const handleConfirmDelete = async () => {
+    if (!deleteCustomerId) return;
+
+    deleteCustomerMutation.mutate(deleteCustomerId);
+    setDeleteCustomerId(null);
+  };
 
   const handleEditCustomer = (id: string) => {
-    setEditCustomerId(id)
-  }
+    setEditCustomerId(id);
+  };
 
   const handleCloseEditModal = () => {
-    setEditCustomerId(null)
-  }
+    setEditCustomerId(null);
+  };
 
   const filteredCustomers = customers.filter(
     (customer: Customer) =>
       customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       customer.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      customer.phoneNumber?.includes(searchQuery),
-  )
+      customer.phoneNumber?.includes(searchQuery)
+  );
 
   return (
     <DashboardLayout>
@@ -88,7 +115,9 @@ export default function CustomersPage() {
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Customers</h1>
-            <p className="text-muted-foreground">Manage your law firm's clients.</p>
+            <p className="text-muted-foreground">
+              Manage your law firm's clients.
+            </p>
           </div>
           <Button onClick={() => setIsAddModalOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />
@@ -99,7 +128,9 @@ export default function CustomersPage() {
         <Card>
           <CardHeader>
             <CardTitle>Customer List</CardTitle>
-            <CardDescription>View and manage all your customers.</CardDescription>
+            <CardDescription>
+              View and manage all your customers.
+            </CardDescription>
             <div className="mt-4 flex w-full max-w-sm items-center space-x-2">
               <Search className="h-4 w-4 text-muted-foreground" />
               <Input
@@ -123,7 +154,9 @@ export default function CustomersPage() {
                       <TableHead>Name</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Phone</TableHead>
-                      <TableHead className="hidden md:table-cell">Address</TableHead>
+                      <TableHead className="hidden md:table-cell">
+                        Address
+                      </TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -173,20 +206,54 @@ export default function CustomersPage() {
               </div>
             ) : (
               <div className="py-8 text-center">
-                <p className="text-muted-foreground">No customers found. Add your first customer to get started.</p>
+                <p className="text-muted-foreground">
+                  No customers found. Add your first customer to get started.
+                </p>
               </div>
             )}
           </CardContent>
         </Card>
 
         {/* Add Customer Modal */}
-        <CustomerFormModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
+        <CustomerFormModal
+          isOpen={isAddModalOpen}
+          onClose={() => setIsAddModalOpen(false)}
+        />
 
         {/* Edit Customer Modal */}
         {editCustomerId && (
-          <CustomerFormModal isOpen={!!editCustomerId} onClose={handleCloseEditModal} customerId={editCustomerId} />
+          <CustomerFormModal
+            isOpen={!!editCustomerId}
+            onClose={handleCloseEditModal}
+            customerId={editCustomerId}
+          />
         )}
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog
+          open={!!deleteCustomerId}
+          onOpenChange={(open) => !open && setDeleteCustomerId(null)}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the
+                customer and all associated data.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleConfirmDelete}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </DashboardLayout>
-  )
+  );
 }
