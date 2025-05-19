@@ -179,8 +179,6 @@ export default function CustomersPage() {
                         <TableCell className="text-right">
                           <div className="flex justify-end space-x-2">
                             <Button
-                              variant="ghost"
-                              size="icon"
                               className="h-8 w-8"
                               aria-label="Edit customer"
                               onClick={() => handleEditCustomer(customer.id)}
@@ -188,8 +186,6 @@ export default function CustomersPage() {
                               <Edit className="h-4 w-4" />
                             </Button>
                             <Button
-                              variant="ghost"
-                              size="icon"
                               className="h-8 w-8 text-destructive hover:text-destructive"
                               onClick={() => handleDeleteCustomer(customer.id)}
                               aria-label="Delete customer"
@@ -232,7 +228,7 @@ export default function CustomersPage() {
         {/* Delete Confirmation Dialog */}
         <AlertDialog
           open={!!deleteCustomerId}
-          onOpenChange={(open) => !open && setDeleteCustomerId(null)}
+          onOpenChange={(open: boolean) => !open && setDeleteCustomerId(null)}
         >
           <AlertDialogContent>
             <AlertDialogHeader>

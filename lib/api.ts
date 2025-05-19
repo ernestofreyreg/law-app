@@ -185,7 +185,6 @@ export const mattersApi = {
 
       return handleApiResponse(response);
     } catch (error) {
-      console.error("Error fetching matters:", error);
       return []; // Return empty array on error to prevent UI crashes
     }
   },
